@@ -6,9 +6,10 @@ Modelo de mensagem
 }
 
 Tipo de mensagem
-1:
-2:
-3:
-4:
-5:
+1: request titulos e codigos das disciplinas
+2: request ementa DADO codigo
+3: request todos os dados de uma disciplina DADO codigo
+4: request mostra tudo de todas
+5: request escrever texto prof DADO codigo
+6: request comentario de um disciplina DADO codigo
 ...

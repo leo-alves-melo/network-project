@@ -17,11 +17,11 @@ cJSON* fetch_info(int mes_numb, cJSON* json);
    representation of the message. */
 char* make_server_message(int mes_numb, cJSON* content_root);
 
-/* make a client message with only the message number since it is a
-   request message
-   given the messaage number, it returns the string representation of the
-   message */
-char* make_client_message(int mes_numb);
+/* make a client message with the message number and content, that can be
+   a code and/or a comment
+   given the messaage number, the code and the comment, it returns the string
+   representation of the message */
+char* make_client_message(int mes_numb, char* code, char* comment)
 
 /* parse a server message received by the client and prints in the screen
    the data requested.
