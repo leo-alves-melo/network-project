@@ -1,0 +1,14 @@
+Modelo de mensagem
+
+{
+	"message_number": 3
+	"content": {...}
+}
+
+Tipo de mensagem
+1:
+2:
+3:
+4:
+5:
+...
