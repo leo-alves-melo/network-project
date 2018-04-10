@@ -2,14 +2,17 @@ Modelo de mensagem
 
 {
 	"message_number": 3
-	"content": {...}
+	"content": {
+		"codigo": ...
+		"comentario": ...
+	}
 }
 
 Tipo de mensagem
-1: request titulos e codigos das disciplinas
-2: request ementa DADO codigo
-3: request todos os dados de uma disciplina DADO codigo
-4: request mostra tudo de todas
-5: request escrever texto prof DADO codigo
-6: request comentario de um disciplina DADO codigo
+1: titulos e codigos das disciplinas
+2: ementa DADO codigo
+3: todos os dados de uma disciplina DADO codigo
+4: mostra tudo de todas
+5: escrever texto prof DADO codigo
+6: comentario de um disciplina DADO codigo
 ...
