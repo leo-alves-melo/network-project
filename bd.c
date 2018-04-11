@@ -30,7 +30,7 @@ char* make_server_message(int mes_numb, cJSON* content_root) {
 	json_message = cJSON_CreateObject();
 	cJSON_AddNumberToObject(json_message, "message_number", mes_numb);
 	cJSON_AddItemReferenceToObject(json_message, "content", content_root);
-	message = cJSON_Print(json_message);
+	cJSON_Delete(json_message);message = cJSON_Print(json_message);
 	cJSON_Delete(json_message);
 	return message;
 }
@@ -46,17 +46,18 @@ char* make_client_message(int mes_numb, char* code, char* comment) {
 		cJSON_AddNullToObject(json_message, "content");
 	else if(comment == NULL) {
 		content = cJSON_CreateObject();
-		cJSON_AddStringToObject(content, "codigo", code);
+		cJSON_AddItemToObject(content, "codigo", cJSON_CreateStringReference(code));
 		cJSON_AddItemToObject(json_message, "content", content);
 	}
 	else {
 		content = cJSON_CreateObject();
-		cJSON_AddStringToObject(content, "codigo", code);
-		cJSON_AddStringToObject(content, "commentario", comment);
+		cJSON_AddItemToObject(content, "codigo", cJSON_CreateStringReference(code));
+		cJSON_AddItemToObject(content, "comentario", cJSON_CreateStringReference(comment));
 		cJSON_AddItemToObject(json_message, "content", content);
 	}
 
 	message = cJSON_Print(json_message);
+	cJSON_Delete(json_message);
 	return message;
 }
 
