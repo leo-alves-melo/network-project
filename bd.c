@@ -30,7 +30,7 @@ char* make_server_message(int mes_numb, cJSON* content_root) {
 	json_message = cJSON_CreateObject();
 	cJSON_AddNumberToObject(json_message, "message_number", mes_numb);
 	cJSON_AddItemReferenceToObject(json_message, "content", content_root);
-	cJSON_Delete(json_message);message = cJSON_Print(json_message);
+	message = cJSON_Print(json_message);
 	cJSON_Delete(json_message);
 	return message;
 }
@@ -166,17 +166,18 @@ int parse_server_message(char* message) {
 	return 0;
 }
 
-int parse_client_message(char* message, char* nxt_message, cJSON* db) {
+int parse_client_message(char* message, char** nxt_message, cJSON* db) {
 	int mes_number;
 	char *codigo, *comentario;
 	cJSON *json, *info, *mes_content;
 
 	json = cJSON_Parse(message);
 	mes_number = cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint;
-	if(mes_number == 3 && mes_number == 4) {
+	if(mes_number == 1 || mes_number == 4) {
 		/*need to fetch some information in the db*/
 		info = fetch_info(mes_number, db, NULL);
-		nxt_message = make_server_message(mes_number, info);
+		*nxt_message = make_server_message(mes_number, info);
+		cJSON_Delete(info);
 	}
 	else {
 		mes_content = cJSON_GetObjectItemCaseSensitive(json, "content");
@@ -187,7 +188,8 @@ int parse_client_message(char* message, char* nxt_message, cJSON* db) {
 		}
 		else {
 			info = fetch_info(mes_number, db, codigo);
-			nxt_message = make_server_message(mes_number, info);
+			*nxt_message = make_server_message(mes_number, info);
+			cJSON_Delete(info);
 		}
 	}
 

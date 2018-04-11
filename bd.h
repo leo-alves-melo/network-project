@@ -35,4 +35,4 @@ int parse_server_message(char* message);
    contains the requested data
    given the message number and a pointer to the message that will be sent,
    it returns an integer indicating if the function worked properly  */
-int parse_client_message(char* message, char* nxt_message, cJSON* db);
+int parse_client_message(char* message, char** nxt_message, cJSON* db);
