@@ -147,16 +147,16 @@ void write_comment(cJSON* db, char* code, char* comment) {
 	char *cod, *aux;
 
 	arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
+
 	for(it = arr -> child; it != NULL; it = it -> next) {
 		cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 		if(strcmp(cod, code) == 0) {
-			aux = malloc(sizeof(comment));
-			strcpy(aux, comment);
-			comment_str_obj = cJSON_CreateString(aux);
+			comment_str_obj = cJSON_CreateStringReference(comment);
 			cJSON_ReplaceItemInObjectCaseSensitive(it, "comentario", comment_str_obj);
 			break;
 		}
 	}
+
 }
 
 int parse_server_message(char* message) {
