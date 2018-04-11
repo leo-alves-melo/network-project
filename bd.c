@@ -74,51 +74,47 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			for(it = arr -> child; it != NULL; it = it -> next) {
 				/*creating the object containing only the asked infos*/
 				disc_obj = cJSON_CreateObject();
-				elem = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
-				aux = malloc(sizeof(elem));
-				strcpy(aux, elem);
-				cJSON_AddStringToObject(disc_obj, "codigo",	aux);
 				elem = cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring;
-				aux = malloc(sizeof(elem));
-				strcpy(aux, elem);
-				cJSON_AddStringToObject(disc_obj, "nome",	aux);
-
+				cJSON_AddItemToObject(disc_obj, "nome", cJSON_CreateStringReference(elem));
+				elem = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
+				cJSON_AddItemToObject(disc_obj, "codigo", cJSON_CreateStringReference(elem));
 				cJSON_AddItemToArray(info_arr, disc_obj);
 			}
+
 			cJSON_AddItemToObject(info_obj, "disciplinas", info_arr);
 			break;
 		case 2:
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
 			info_obj = cJSON_CreateObject();
 			info_arr = cJSON_CreateArray();
+
 			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
 					disc_obj = cJSON_CreateObject();
-					elem = cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring;
-					aux = malloc(sizeof(elem));
-					strcpy(aux, elem);
-					cJSON_AddStringToObject(disc_obj, "nome",	aux);
-
+					elem = cJSON_GetObjectItemCaseSensitive(it, "ementa") -> valuestring;
+					cJSON_AddItemToObject(disc_obj, "ementa", cJSON_CreateStringReference(elem));
 					cJSON_AddItemToArray(info_arr, disc_obj);
 					break;
 				}
 			}
+
 			cJSON_AddItemToObject(info_obj, "disciplinas", info_arr);
 			break;
 		case 3:
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
+			info_obj = cJSON_CreateObject();
+			info_arr = cJSON_CreateArray();
+
 			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
-					info_arr = cJSON_CreateArrayReference(cJSON_CreateObjectReference(it -> child));
-					aux = malloc(11 * sizeof(char));
-					aux = "disciplinas";
-					info_obj = cJSON_CreateObjectReference(info_arr);
-
+					cJSON_AddItemToArray(info_arr, cJSON_CreateObjectReference(it -> child));
 					break;
 				}
 			}
+
+			cJSON_AddItemToObject(info_obj, "disciplinas", info_arr);
 			break;
 		case 4:
 			info_obj = cJSON_CreateObjectReference(db -> child);
@@ -127,19 +123,18 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
 			info_obj = cJSON_CreateObject();
 			info_arr = cJSON_CreateArray();
+
 			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
 					disc_obj = cJSON_CreateObject();
 					elem = cJSON_GetObjectItemCaseSensitive(it, "comentario") -> valuestring;
-					aux = malloc(sizeof(elem));
-					strcpy(aux, elem);
-					cJSON_AddStringToObject(disc_obj, "nome",	aux);
-
+					cJSON_AddItemToObject(disc_obj, "comentario", cJSON_CreateStringReference(elem));
 					cJSON_AddItemToArray(info_arr, disc_obj);
 					break;
 				}
 			}
+
 			cJSON_AddItemToObject(info_obj, "disciplinas", info_arr);
 			break;
 	}
