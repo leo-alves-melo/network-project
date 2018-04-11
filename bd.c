@@ -2,30 +2,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cJSON.h"
+#include "bd.h"
 
-
-int initialize(char* file_name, FILE* fp, cJSON* json) {
+int initialize(char* file_name, FILE** fp, cJSON** json) {
 	int size;
-	char* fcontent;
+	char *fcontent;
 
 	/*open file*/
-	fp = fopen(nome_arq, "r+");
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	*fp = fopen(file_name, "r+");
+	fseek(*fp, 0, SEEK_END);
+	size = ftell(*fp);
+	fseek(*fp, 0, SEEK_SET);
 	fcontent = malloc(size);
-	fread(fcontent, 1, size, fp);
+	fread(fcontent, 1, size, *fp);
 
 	/* initialize db structure (json) */
-	json = cJSON_Parse(fcontent);
-	if(json == NULL)
+	*json = cJSON_Parse(fcontent);
+	if(*json == NULL)
 		return 1;
 	return 0;
 }
 
 char* make_server_message(int mes_numb, cJSON* content_root) {
-	char* message;
-	cJSON* json_message;
+	char *message;
+	cJSON *json_message;
 
 	json_message = cJSON_CreateObject();
 	cJSON_AddNumberToObject(json_message, "message_number", mes_numb);
@@ -35,8 +35,8 @@ char* make_server_message(int mes_numb, cJSON* content_root) {
 }
 
 char* make_client_message(int mes_numb, char* code, char* comment) {
-	char* message;
-	cJSON* json_message, content;
+	char *message;
+	cJSON *json_message, *content;
 
 	json_message = cJSON_CreateObject();
 	cJSON_AddNumberToObject(json_message, "message_number", mes_numb);
@@ -60,8 +60,8 @@ char* make_client_message(int mes_numb, char* code, char* comment) {
 }
 
 cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
-	cJSON* it, arr, info_obj, info_arr, disc_obj, elem;
-	char* cod, aux;
+	cJSON *it, *arr, *info_obj, *info_arr, *disc_obj;
+	char *cod, *aux, *elem;
 
 	switch (mes_numb) {
 		case 1:
@@ -69,7 +69,7 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			info_obj = cJSON_CreateObject();
 			info_arr = cJSON_CreateArray();
 			/*iterating over objects of array disciplinas*/
-			cJSON_ArrayForEach(it, arr -> child) {
+			for(it = arr -> child; it != NULL; it = it -> next) {
 				/*creating the object containing only the asked infos*/
 				disc_obj = cJSON_CreateObject();
 				elem = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
@@ -89,11 +89,11 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
 			info_obj = cJSON_CreateObject();
 			info_arr = cJSON_CreateArray();
-			cJSON_ArrayForEach(it, arr -> child) {
+			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
 					disc_obj = cJSON_CreateObject();
-					elem = cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring);
+					elem = cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring;
 					aux = malloc(sizeof(elem));
 					strcpy(aux, elem);
 					cJSON_AddStringToObject(disc_obj, "nome",	aux);
@@ -106,11 +106,11 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			break;
 		case 3:
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
-			cJSON_ArrayForEach(it, arr -> child) {
+			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
 					info_arr = cJSON_CreateArrayReference(cJSON_CreateObjectReference(it -> child));
-					aux = malloc(11 * sizeof(char))
+					aux = malloc(11 * sizeof(char));
 					aux = "disciplinas";
 					info_obj = cJSON_CreateObjectReference(info_arr);
 
@@ -125,11 +125,11 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 			arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
 			info_obj = cJSON_CreateObject();
 			info_arr = cJSON_CreateArray();
-			cJSON_ArrayForEach(it, arr -> child) {
+			for(it = arr -> child; it != NULL; it = it -> next) {
 				cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 				if(strcmp(cod, code) == 0) {
 					disc_obj = cJSON_CreateObject();
-					elem = cJSON_GetObjectItemCaseSensitive(it, "comentario") -> valuestring);
+					elem = cJSON_GetObjectItemCaseSensitive(it, "comentario") -> valuestring;
 					aux = malloc(sizeof(elem));
 					strcpy(aux, elem);
 					cJSON_AddStringToObject(disc_obj, "nome",	aux);
@@ -146,10 +146,11 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 }
 
 void write_comment(cJSON* db, char* code, char* comment) {
-	cJSON* arr, it, comment_str_obj, aux;
+	cJSON *arr, *it, *comment_str_obj;
+	char *cod, *aux;
 
 	arr = cJSON_GetObjectItemCaseSensitive(db, "disciplinas");
-	cJSON_ArrayForEach(it, arr -> child) {
+	for(it = arr -> child; it != NULL; it = it -> next) {
 		cod = cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring;
 		if(strcmp(cod, code) == 0) {
 			aux = malloc(sizeof(comment));
@@ -162,7 +163,7 @@ void write_comment(cJSON* db, char* code, char* comment) {
 }
 
 int parse_server_message(char* message) {
-	cJSON* json = NULL;
+	cJSON *json = NULL;
 
 	json = cJSON_Parse(message);
 	return 0;
@@ -170,26 +171,26 @@ int parse_server_message(char* message) {
 
 int parse_client_message(char* message, char* nxt_message, cJSON* db) {
 	int mes_number;
-	char* codigo, comentario;
-	cJSON* json, info, mes_content;
+	char *codigo, *comentario;
+	cJSON *json, *info, *mes_content;
 
 	json = cJSON_Parse(message);
-	mes_numb = cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint;
-	if(mes_numb == 3 && mes_numb == 4) {
+	mes_number = cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint;
+	if(mes_number == 3 && mes_number == 4) {
 		/*need to fetch some information in the db*/
-		info = fetch_info(mes_numb, db, NULL);
-		nxt_message = make_server_message(mes_numb, info);
+		info = fetch_info(mes_number, db, NULL);
+		nxt_message = make_server_message(mes_number, info);
 	}
 	else {
 		mes_content = cJSON_GetObjectItemCaseSensitive(json, "content");
-		codigo = cJSON_GetObjectItemCaseSensitive(mes_content, "codigo");
-		if (mes_numb == 5){
-			comentario = cJSON_GetObjectItemCaseSensitive(mes_content, "comentario");
+		codigo = cJSON_GetObjectItemCaseSensitive(mes_content, "codigo") -> valuestring;
+		if (mes_number == 5){
+			comentario = cJSON_GetObjectItemCaseSensitive(mes_content, "comentario")  -> valuestring;
 			write_comment(db, codigo, comentario);
 		}
 		else {
-			info = fetch_info(mes_numb, db, codigo);
-			nxt_message = make_server_message(mes_numb, info);
+			info = fetch_info(mes_number, db, codigo);
+			nxt_message = make_server_message(mes_number, info);
 		}
 	}
 

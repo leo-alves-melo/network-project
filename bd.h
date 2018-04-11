@@ -3,7 +3,7 @@
 /* initialize the data structure (json)
    given a file name, it returns the file pointer and the json tree structure
    also return an integer indicating error */
-int initialize(char* file_name, FILE* fp, cJSON* json);
+int initialize(char* file_name, FILE** fp, cJSON** json);
 
 /* fetch some data in the json structure stored in the db. the data that is
    going to be fetched depends on the type of message that the server will send.
@@ -23,7 +23,7 @@ char* make_server_message(int mes_numb, cJSON* db);
    a code and/or a comment
    given the messaage number, the code and the comment, it returns the string
    representation of the message */
-char* make_client_message(int mes_numb, char* code, char* comment)
+char* make_client_message(int mes_numb, char* code, char* comment);
 
 /* parse a server message received by the client and prints in the screen
    the data requested.
