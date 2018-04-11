@@ -160,9 +160,49 @@ void write_comment(cJSON* db, char* code, char* comment) {
 }
 
 int parse_server_message(char* message) {
-	cJSON *json = NULL;
+	cJSON *json, *cont, *obj, *it;
 
 	json = cJSON_Parse(message);
+	cont = cJSON_GetObjectItemCaseSensitive(json, "content");
+	switch (cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint) {
+		case 1:
+			/*obj is the first item of the only object present in the array*/
+			for(it = cont -> child -> child; it != NULL; it = it -> next) {
+				printf("Título: %s\n", cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring);
+				printf("Código: %s\n", cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring);
+				printf("\n");
+			}
+			break;
+		case 2:
+			obj = cont -> child -> child;
+			printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
+			break;
+		case 3:
+			obj = cont -> child -> child;
+			printf("Título: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "nome") -> valuestring);
+			printf("Código: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "codigo") -> valuestring);
+			printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
+			printf("Sala: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "sala") -> valuestring);
+			printf("Horário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "horario") -> valuestring);
+			printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+			break;
+		case 4:
+			for(it = cont -> child -> child; it != NULL; it = it -> next) {
+				printf("Título: %s\n", cJSON_GetObjectItemCaseSensitive(it, "nome") -> valuestring);
+				printf("Código: %s\n", cJSON_GetObjectItemCaseSensitive(it, "codigo") -> valuestring);
+				printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(it, "ementa") -> valuestring);
+				printf("Sala: %s\n", cJSON_GetObjectItemCaseSensitive(it, "sala") -> valuestring);
+				printf("Horário: %s\n", cJSON_GetObjectItemCaseSensitive(it, "horario") -> valuestring);
+				printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(it, "comentario") -> valuestring);
+				printf("\n");
+			}
+			break;
+		case 6:
+			obj = cont -> child -> child;
+			printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+			break;
+	}
+
 	return 0;
 }
 
