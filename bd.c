@@ -29,8 +29,9 @@ char* make_server_message(int mes_numb, cJSON* content_root) {
 
 	json_message = cJSON_CreateObject();
 	cJSON_AddNumberToObject(json_message, "message_number", mes_numb);
-	cJSON_AddItemToObject(json_message, "content", content_root);
-	message = cJSON_Print(content_root);
+	cJSON_AddItemReferenceToObject(json_message, "content", content_root);
+	message = cJSON_Print(json_message);
+	cJSON_Delete(json_message);
 	return message;
 }
 
