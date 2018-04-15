@@ -10,6 +10,8 @@
    the remaining function should not be called because they are internally
    by the exposed functions. */
 
+#include "cJSON.h"
+
 /* initialize the data structure (json)
    given a file name, it returns the file pointer and the json tree structure
    also return an integer indicating error */
