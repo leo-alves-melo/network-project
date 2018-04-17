@@ -11,6 +11,8 @@
 #define ERROR -1
 #define OK 0
 
+#define RECEIVED_MESSAGE_LENGHT 1024*10
+
 char checkClientType();
 void studentConnection();
 void professorConnection();
@@ -93,7 +95,6 @@ int connectToTheServer() {
     //}
 
     socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-    printf("olha meu soquéte: %d\n", socket_number);
 
     printf("Conectei? %d\n", connect(socket_number, servinfo->ai_addr, servinfo->ai_addrlen));
 
@@ -104,7 +105,7 @@ void studentConnection() {
 
 	char command;
 	char * message;
-	char received_message[513];
+	char received_message[RECEIVED_MESSAGE_LENGHT];
 	char discipline[10];
 
 	int socket_number;
@@ -119,36 +120,70 @@ void studentConnection() {
 		printf("[4] listar todas as informações de todas as disciplinas\n");
 		printf("[5] dado o código de uma disciplina, retornar o texto de comentário sobre a próxima aula\n");
 
+		for(int i = 0; i < RECEIVED_MESSAGE_LENGHT; i++) {
+    		received_message[i] = '\0';
+   		}
+
 		scanf(" %c", &command);
 
-		socket_number = connectToTheServer();
+		
 
 		if(command == '1') {
+			socket_number = connectToTheServer();
 			message = make_client_message(1, NULL, NULL);
 			send(socket_number, message, strlen(message), 0); 
-		    recv(socket_number, received_message, 512, 0);
+		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 		    parse_server_message(received_message);
+		    close(socket_number); 
 
 		} else if(command == '2') {
+
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
+			socket_number = connectToTheServer();
 			message = make_client_message(2, discipline, NULL);
 			send(socket_number, message, strlen(message), 0); 
-		    recv(socket_number, received_message, 512, 0);
+		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+
+		    printf("Mensagem que recebi:\n%s\n", received_message);
 		    parse_server_message(received_message);
+		    close(socket_number); 
 
 
 		} else if(command == '3') {
+			printf("Escreva o nome da disciplina:\n");
+			scanf(" %s", discipline);
+			socket_number = connectToTheServer();
+			message = make_client_message(3, discipline, NULL);
+			send(socket_number, message, strlen(message), 0); 
+		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+		    parse_server_message(received_message);
+		    close(socket_number); 
 
 		} else if(command == '4') {
+			socket_number = connectToTheServer();
+			message = make_client_message(4, NULL, NULL);
+			send(socket_number, message, strlen(message), 0); 
+		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+		    printf("Por que nao estou conseguindo? %s\n", received_message);
+		    parse_server_message(received_message);
+		    close(socket_number); 
 
 		} else if(command == '5') {
 
+			printf("Escreva o nome da disciplina:\n");
+			scanf(" %s", discipline);
+			socket_number = connectToTheServer();
+			message = make_client_message(5, discipline, NULL);
+			send(socket_number, message, strlen(message), 0); 
+		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+		    parse_server_message(received_message);
+		    close(socket_number); 
 		} else {
-
+			printf("Ops! Este não é um número válido!\n");
 		}
 
-		close(socket_number); 
+		
 	}
 
 	while(logInStudent() == ERROR) {

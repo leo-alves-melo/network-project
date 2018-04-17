@@ -58,6 +58,7 @@ char* make_client_message(int mes_numb, char* code, char* comment) {
 
 	message = cJSON_Print(json_message);
 	cJSON_Delete(json_message);
+
 	return message;
 }
 
