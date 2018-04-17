@@ -2,6 +2,7 @@
 *.d
 
 teste
+client
 teste.c
 
 # Object files

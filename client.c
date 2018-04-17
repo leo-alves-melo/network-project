@@ -22,7 +22,7 @@ int logInProfessor();
 int main() {
 
 	char clientType = checkClientType();
-	
+
 	if(clientType == STUDENT) {
 		studentConnection();
 	}
@@ -126,15 +126,15 @@ void studentConnection() {
 
 		scanf(" %c", &command);
 
-		
+
 
 		if(command == '1') {
 			socket_number = connectToTheServer();
 			message = make_client_message(1, NULL, NULL);
-			send(socket_number, message, strlen(message), 0); 
+			send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 		    parse_server_message(received_message);
-		    close(socket_number); 
+		    close(socket_number);
 
 		} else if(command == '2') {
 
@@ -142,12 +142,12 @@ void studentConnection() {
 			scanf(" %s", discipline);
 			socket_number = connectToTheServer();
 			message = make_client_message(2, discipline, NULL);
-			send(socket_number, message, strlen(message), 0); 
+			send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 
 		    printf("Mensagem que recebi:\n%s\n", received_message);
 		    parse_server_message(received_message);
-		    close(socket_number); 
+		    close(socket_number);
 
 
 		} else if(command == '3') {
@@ -155,35 +155,35 @@ void studentConnection() {
 			scanf(" %s", discipline);
 			socket_number = connectToTheServer();
 			message = make_client_message(3, discipline, NULL);
-			send(socket_number, message, strlen(message), 0); 
+			send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 		    parse_server_message(received_message);
-		    close(socket_number); 
+		    close(socket_number);
 
 		} else if(command == '4') {
 			socket_number = connectToTheServer();
 			message = make_client_message(4, NULL, NULL);
-			send(socket_number, message, strlen(message), 0); 
+			send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 		    printf("Por que nao estou conseguindo? %s\n", received_message);
 		    parse_server_message(received_message);
-		    close(socket_number); 
+		    close(socket_number);
 
 		} else if(command == '5') {
 
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
 			socket_number = connectToTheServer();
-			message = make_client_message(5, discipline, NULL);
-			send(socket_number, message, strlen(message), 0); 
+			message = make_client_message(6, discipline, NULL);
+			send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
 		    parse_server_message(received_message);
-		    close(socket_number); 
+		    close(socket_number);
 		} else {
 			printf("Ops! Este não é um número válido!\n");
 		}
 
-		
+
 	}
 
 	while(logInStudent() == ERROR) {
