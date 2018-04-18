@@ -1,0 +1,109 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = pt_BR
+\documentclass[
+	% -- opções da classe memoir --
+	article,			% indica que é um artigo acadêmico
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no recto. Oposto a twoside
+	a4paper,			% tamanho do papel.
+	% -- opções da classe hyperrref --
+	hidelinks,
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE % títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	sumario=abnt-6027-2012
+	]{abntex2}
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype}			% para melhorias de justificação
+\usepackage[brazilian,hyperpageref]{backref}	% Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+\usepackage{amsmath}			%\
+\usepackage{amsfonts}			% Pacotes para expressões matemáticas
+\usepackage{amssymb}			%/
+
+%\usepackage{siunitx}			% Para unidades
+\usepackage{subfig}				% Para usar \subfloat
+
+%\sisetup{output-decimal-marker = {,}, separate-uncertainty = true}
+
+%\numberwithin{table}{section}
+%\numberwithin{figure}{section}
+%\numberwithin{equation}{section} % Colocar o número da seção nas referências
+
+% título do relatório
+\title{Titulo}
+
+% nomes dos componentes  - está um ao lado do outro
+\author{
+	Mateus de Carvalho Coelho \\ R.A. 156675 %\and ...proximo nome ra
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents*
+
+
+\section{Objetivos}
+
+% exemplo img
+%\begin{figure}
+%	\center	
+%	\includegraphics[width=.5\textwidth]{objetos1.png}
+%	\caption{Imagem a ser trabalhada \textit{objetos1.png}}
+%	\label{fig:obj1}
+%\end{figure}
+
+
+\section{Esteganografia}
+
+% exemplo varias imgs
+%\begin{figure}
+%	\centering
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{monalisa.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{monalisa_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{watch.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{watch_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{peppers.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{peppers_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{baboon.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{baboon_mod.png}
+%	}\\
+%	\caption{Comparação entre imagem original e modificada pela alteração de bits menos significativos dos pixels.}
+%	\label{fig:comp}
+%\end{figure}
+
+
+\section{Aspectos técnicos}
+
+
+
+\end{document}
