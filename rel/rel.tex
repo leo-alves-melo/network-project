@@ -1,0 +1,181 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = pt_BR
+\documentclass[
+	% -- opções da classe memoir --
+	article,			% indica que é um artigo acadêmico
+	11pt,				% tamanho da fonte
+	oneside,			% para impressão apenas no recto. Oposto a twoside
+	a4paper,			% tamanho do papel.
+	% -- opções da classe hyperrref --
+	hidelinks,
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE % títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	sumario=abnt-6027-2012
+	]{abntex2}
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype}			% para melhorias de justificação
+\usepackage[brazilian,hyperpageref]{backref}	% Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+\usepackage{amsmath}			%\
+\usepackage{amsfonts}			% Pacotes para expressões matemáticas
+\usepackage{amssymb}			%/
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+%\usepackage{siunitx}			% Para unidades
+\usepackage{subfig}				% Para usar \subfloat
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{background},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+
+%\sisetup{output-decimal-marker = {,}, separate-uncertainty = true}
+
+%\numberwithin{table}{section}
+%\numberwithin{figure}{section}
+%\numberwithin{equation}{section} % Colocar o número da seção nas referências
+
+% título do relatório
+\title{Experimento de arquitetura cliente-servidor}
+
+% nomes dos componentes  - está um ao lado do outro
+\author{
+	Mateus de Carvalho Coelho \\ R.A. 156675 \and
+	Leonardo Alves de Melo \\ R.A. 999999
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents*
+
+
+\section{Introdução}
+
+Este relatório tem como objetivo descrever os resultados e a implementação de um sistema com arquitetura cliente-servidor que resolve um problema simples de busca e escrita de dados remotamente. Em outras palavras, o servidor simula um banco de dados básico que deve receber requisições de vários clientes diferentes simultaneamente. Após finalizado, o sistema passou por um benchmark a fim de medir o tempo de resposta de várias requisições de tipos diferntes e em diferentes períodos de tempo.
+
+\section{Sistema}
+
+O sistema foi concebido no contexto de uma universidade e tem como objetivo centralizar informações de disciplinas acadêmicas no servidor e servir os clientes, que podem ser alunos ou professores. O servidor começa  por padrão com cinco disciplinas, sendo que para cada uma existem os seguintes campos: nome, código, ementa, sala, horário e comentário. Ao todo existem seis tipos diferentes de requisições que os clientes podem fazer ao servidor, mas apenas uma delas pode ser realizada por um professor. São elas:
+
+\begin{enumerate}
+	\item Mostrar os nomes e códigos de todas aa disciplinas cadastradas no banco de dados;
+	\item Dado o código de uma disciplina, retornar a sua ementa;
+	\item Dado o código de uma disciplina, enviar todas as informações dela;
+	\item Mostrar todas as informações de todas as disciplinas cadastradas;
+	\item Dado o código de uma disciplina, escrever um texto no campo comentário (apenas professor);
+	\item Retornar o comentário de uma disciplina, dado seu código.
+\end{enumerate}
+
+A fim de facilitar o processo de desenvolvimento, o projeto foi dividido em duas partes: redes e banco de dados. Esta trata os dados armazenados pelo servidor oferencedo uma API que empacota e desempacota mensagens a serem enviadas enquanto aquela trata de estabelecer a conexão entre o cliente e o servidor.
+
+\section{Armazenamento e estrutura de dados do servidor}
+
+Ponderando praticidade e eficiência, a solução escolhida para armazenar os dados foi um arquivo de texto com uma estrutura JSON (JavaScript Object Notation). Na inicialização do servidor esse arquivo é lido e seus dados armazenados na memória. Já na finalização do programa, a estrutura JSON guardada na memória é escrita no arquivo a fim de salvar o estado mais atualizado do banco de dados. Note que entre esses dois acontecimentos nada é escrito ou lido do arquivo porque tudo é feito sobre a estrutura presente na memória, melhorando o desempenho de temmpo.
+
+O JSON foi escolhido porque atualmente é um formato que tem muito suporte e bibliotecas que o tratam. Além disso, a conversão dessa estrutura para os recursos da linguagem C é natural pois ele pode ser facilmente modelado como um árvore. Por exemplo, um vetor e um objeto no JSON são representados como um nó raiz que tem $n$ filhos, em que cada filho representa um elemento ou atributo, respectivamente, e $n$ é a quantidade destes. Para facilitar esse procedimento de conversão e manipulação do banco de dados, a biblioteca cJSON foi empregada  tendo em vista que tem todos recursos necessários ainda que seja simples o suficiente para caber em dois arquivos.
+
+A estrutura interna é composta por um objeto contendo um atributo do tipo array chamado \textit{disciplinas}. Este array, por sua vez, tem vários objetos, cada um representando uma disciplina. Um exemplo de objeto de disciplina pode ser visto em X.
+
+\begin{lstlisting}[language=json,firstnumber=1]
+{
+      "nome": "Aprendizado de Máquina",
+      "codigo": "MC886A",
+      "ementa": "Técnicas de aprendizado de máquina estatístico para classificação, agrupamento e detecção de outliers.",
+      "sala": "CB1/CB2",
+      "horario": "19:00-21:00/21:00-23:00",
+      "comentario": "Comentário inicial"
+}
+\end{lstlisting}
+
+\section{Servidor TCP}
+\section{Resultados}
+\section{Conclusão}
+\section{Referências}
+
+% exemplo img
+%\begin{figure}
+%	\center	
+%	\includegraphics[width=.5\textwidth]{objetos1.png}
+%	\caption{Imagem a ser trabalhada \textit{objetos1.png}}
+%	\label{fig:obj1}
+%\end{figure}
+
+% exemplo varias imgs
+%\begin{figure}
+%	\centering
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{monalisa.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{monalisa_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{watch.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{watch_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{peppers.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{peppers_mod.png}
+%	}\\
+%	\subfloat[Original]{
+%		\includegraphics[width=.35\textwidth]{baboon.png}
+%	}\hfill
+%	\subfloat[Modificada]{
+%		\includegraphics[width=.35\textwidth]{baboon_mod.png}
+%	}\\
+%	\caption{Comparação entre imagem original e modificada pela alteração de bits menos significativos dos pixels.}
+%	\label{fig:comp}
+%\end{figure}
+
+\end{document}

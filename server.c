@@ -46,7 +46,7 @@ void respondClient(void * address) {
 
     send(client->socket_number, retorno, strlen(retorno), 0);
 
-    close(client->socket_number); 
+    close(client->socket_number);
 }
 
 int main() {
@@ -108,7 +108,7 @@ int main() {
 		addr_size = sizeof their_addr;
 
 	    new_fd = accept(socket_number, (struct sockaddr *)&their_addr, &addr_size);
-	    
+
 	    client = (Client *) malloc(sizeof(Client *));
 
 	    client->socket_number = new_fd;
@@ -116,14 +116,11 @@ int main() {
 	    client->lock = &lock;
 
 	    thread = (pthread_t *) malloc(sizeof(pthread_t *));
-	    pthread_create(&thread, NULL, (void *) respondClient, (void *) client);
+	    pthread_create(thread, NULL, (void *) respondClient, (void *) client);
 
 
-
-
-	    
 	}
-	
+
 
 
 
