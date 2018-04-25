@@ -143,6 +143,16 @@ cJSON* fetch_info(int mes_numb, cJSON* db, char* code) {
 	return info_obj;
 }
 
+void write_db_to_file(cJSON* db, char* file_name) {
+	FILE *file = fopen(file_name, "w");
+	if (file != NULL)
+    {
+
+        fputs(cJSON_Print(db), file);
+        fclose(file);
+    }
+}
+
 void write_comment(cJSON* db, char* code, char* comment) {
 	cJSON *arr, *it, *comment_str_obj;
 	char *cod, *aux;
@@ -157,7 +167,7 @@ void write_comment(cJSON* db, char* code, char* comment) {
 			break;
 		}
 	}
-
+	write_db_to_file(db, "data.json");
 }
 
 int parse_server_message(char* message) {
@@ -198,6 +208,9 @@ int parse_server_message(char* message) {
 				printf("\n");
 			}
 			break;
+		case 5:
+			printf("O seu comentário \"%s\" foi escrito com sucesso!", cJSON_GetObjectItemCaseSensitive(json, "content") -> valuestring);
+			break;
 		case 6:
 			obj = cont -> child -> child;
 			printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
@@ -211,6 +224,7 @@ int parse_client_message(char* message, char** nxt_message, cJSON* db) {
 	int mes_number;
 	char *codigo, *comentario;
 	cJSON *json, *info, *mes_content;
+	
 
 	json = cJSON_Parse(message);
 	mes_number = cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint;
@@ -224,8 +238,13 @@ int parse_client_message(char* message, char** nxt_message, cJSON* db) {
 		mes_content = cJSON_GetObjectItemCaseSensitive(json, "content");
 		codigo = cJSON_GetObjectItemCaseSensitive(mes_content, "codigo") -> valuestring;
 		if (mes_number == 5){
+			
 			comentario = cJSON_GetObjectItemCaseSensitive(mes_content, "comentario")  -> valuestring;
+			
 			write_comment(db, codigo, comentario);
+			info = fetch_info(mes_number, db, codigo);
+			*nxt_message = make_server_message(mes_number, info);
+			
 		}
 		else {
 			info = fetch_info(mes_number, db, codigo);

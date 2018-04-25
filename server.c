@@ -13,17 +13,21 @@
 
 #define MESSAGE_LENGHT 1024*10
 
-cJSON* db;
 
 typedef struct Client {
 	int socket_number;
+	cJSON* db;
+	pthread_mutex_t *lock;
+
 } Client;
 
 void respondClient(void * address) {
 	char mess[MESSAGE_LENGHT];
 	char *retorno;
+	cJSON* db;
 
 	Client *client = (Client *) address;
+	db = client->db;
 
 
     for(int i = 0; i < MESSAGE_LENGHT; i++) {
@@ -34,7 +38,11 @@ void respondClient(void * address) {
 
     printf("Messagem que recebi: \n%s\n", mess);
 
+    /* Deve-se tomar cuidado com o parse, ele acessa recursos do banco de dados */
+
+    pthread_mutex_lock(client->lock);
     parse_client_message(mess, &retorno, db);
+    pthread_mutex_unlock(client->lock);
 
     send(client->socket_number, retorno, strlen(retorno), 0);
 
@@ -56,6 +64,9 @@ int main() {
 	FILE *file;
 	Client * client;
 	pthread_t * thread;
+	pthread_mutex_t lock;
+
+	cJSON* db;
 
 	printf("Oi, sou servidor\n");
 
@@ -73,6 +84,8 @@ int main() {
 	}
 
 
+
+
 	socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 
 	meu_bind = bind(socket_number, servinfo->ai_addr, servinfo->ai_addrlen); //Colocar funcao de esperar se o BIND nao der certo
@@ -87,6 +100,8 @@ int main() {
 
 	listen(socket_number, CLIENTS);
 
+	pthread_mutex_init(&lock, NULL);
+
 	while(1) {
 
 
@@ -97,6 +112,8 @@ int main() {
 	    client = (Client *) malloc(sizeof(Client *));
 
 	    client->socket_number = new_fd;
+	    client->db = db;
+	    client->lock = &lock;
 
 	    thread = (pthread_t *) malloc(sizeof(pthread_t *));
 	    pthread_create(&thread, NULL, (void *) respondClient, (void *) client);

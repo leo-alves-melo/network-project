@@ -34,7 +34,7 @@ char* make_server_message(int mes_numb, cJSON* db);
 
 /* make a client message with the message number and content. the latter is an
    object that can have course code and/or class comment.
-   given the messaage number, the code and the comment, it returns the string
+   given the message number, the code and the comment, it returns the string
    representation of the message
    note: this function behavior is determined by its message number, so for
    example if a message has number 1, it doesn't require neither code nor comment.
