@@ -186,16 +186,29 @@ int parse_server_message(char* message) {
 			break;
 		case 2:
 			obj = cont -> child -> child;
-			printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
+			if(obj == NULL) {
+				printf("Não existe uma disciplina com esse nome!\n");
+			}
+			else {
+
+				printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
+			}
+
 			break;
 		case 3:
 			obj = cont -> child -> child;
-			printf("Título: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "nome") -> valuestring);
-			printf("Código: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "codigo") -> valuestring);
-			printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
-			printf("Sala: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "sala") -> valuestring);
-			printf("Horário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "horario") -> valuestring);
-			printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+
+			if(obj == NULL) {
+				printf("Não existe uma disciplina com esse nome!\n");
+			}
+			else {
+				printf("Título: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "nome") -> valuestring);
+				printf("Código: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "codigo") -> valuestring);
+				printf("Ementa: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "ementa") -> valuestring);
+				printf("Sala: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "sala") -> valuestring);
+				printf("Horário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "horario") -> valuestring);
+				printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+			}
 			break;
 		case 4:
 			for(it = cont -> child -> child; it != NULL; it = it -> next) {
@@ -209,11 +222,16 @@ int parse_server_message(char* message) {
 			}
 			break;
 		case 5:
-			printf("O seu comentário \"%s\" foi escrito com sucesso!", cJSON_GetObjectItemCaseSensitive(json, "content") -> valuestring);
+			printf("O seu comentário foi escrito com sucesso!", cJSON_GetObjectItemCaseSensitive(json, "content") -> valuestring);
 			break;
 		case 6:
 			obj = cont -> child -> child;
-			printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+			if(obj == NULL) {
+				printf("Não existe uma disciplina com esse nome!\n");
+			}
+			else {
+				printf("Comentário: %s\n", cJSON_GetObjectItemCaseSensitive(obj, "comentario") -> valuestring);
+			}
 			break;
 	}
 
@@ -224,7 +242,7 @@ int parse_client_message(char* message, char** nxt_message, cJSON* db) {
 	int mes_number;
 	char *codigo, *comentario;
 	cJSON *json, *info, *mes_content;
-	
+
 
 	json = cJSON_Parse(message);
 	mes_number = cJSON_GetObjectItemCaseSensitive(json, "message_number") -> valueint;
@@ -238,13 +256,13 @@ int parse_client_message(char* message, char** nxt_message, cJSON* db) {
 		mes_content = cJSON_GetObjectItemCaseSensitive(json, "content");
 		codigo = cJSON_GetObjectItemCaseSensitive(mes_content, "codigo") -> valuestring;
 		if (mes_number == 5){
-			
+
 			comentario = cJSON_GetObjectItemCaseSensitive(mes_content, "comentario")  -> valuestring;
-			
+
 			write_comment(db, codigo, comentario);
 			info = fetch_info(mes_number, db, codigo);
 			*nxt_message = make_server_message(mes_number, info);
-			
+
 		}
 		else {
 			info = fetch_info(mes_number, db, codigo);

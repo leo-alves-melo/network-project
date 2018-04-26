@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include "bd.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -7,6 +7,8 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
+#include <fcntl.h> // for open
+#include <unistd.h> // for close
 
 #define FILENAME "data.json"
 #define CLIENTS 30
@@ -45,6 +47,8 @@ void respondClient(void * address) {
     pthread_mutex_unlock(client->lock);
 
     send(client->socket_number, retorno, strlen(retorno), 0);
+
+		printf("Mensagem que respondi: \n%s\n", retorno);
 
     close(client->socket_number);
 }
