@@ -34,33 +34,30 @@ void respondClient(void * address) {
 	Client *client = (Client *) address;
 	db = client->db;
 
+//printf("Foi6?\n");
 
     for(i = 0; i < MESSAGE_LENGHT; i++) {
     	mess[i] = '\0';
     }
 
+	//printf("Foi?");
 
     recv(client->socket_number, mess, MESSAGE_LENGHT, 0);
+
+    //printf("Messagem que recebi: \n%s\n", mess);
 
     /* Deve-se tomar cuidado com o parse, ele acessa recursos do banco de dados */
 
     pthread_mutex_lock(client->lock);
-
     parse_client_message(mess, &retorno, db);
-
     pthread_mutex_unlock(client->lock);
 
-
-    if(retorno != NULL) {
-    	send(client->socket_number, retorno, strlen(retorno), 0);
-    }
-    else {
-    	send(client->socket_number, "{}", 3, 0);
-    }
-
+    send(client->socket_number, retorno, strlen(retorno), 0);
+	//printf("o que?");
 	clock_gettime(CLOCK_REALTIME, &ts1);
 	printf("%lf\n", difftime(ts1.tv_nsec, client->time->tv_nsec));
 
+		//printf("Mensagem que respondi: \n%s\n", retorno);
 
     close(client->socket_number);
 }
@@ -125,21 +122,21 @@ int main() {
 		addr_size = sizeof their_addr;
 
 	    new_fd = accept(socket_number, (struct sockaddr *)&their_addr, &addr_size);
-
+	//printf("Foi?");
 		clock_gettime(CLOCK_REALTIME, &ts1);
-
+	//printf("Foi?");
 
 	    client = (Client *) malloc(sizeof(Client));
-
+//printf("Foi3?\n");
 
 	    client->socket_number = new_fd;
 	    client->db = db;
 	    client->lock = &lock;
 		client->time = &ts1;
-
+//printf("Foi4?\n");
 
 	    thread = (pthread_t *) malloc(sizeof(pthread_t));
-
+//printf("Foi5?\n");
 	    pthread_create(thread, NULL, (void *) respondClient, (void *) client);
 
 

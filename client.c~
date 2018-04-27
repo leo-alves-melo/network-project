@@ -89,6 +89,8 @@ int connectToTheServer(char *IPServer) {
 
 	status = getaddrinfo(IPServer, "3490", &hints, &servinfo);
 
+	//printf("Olha o meu status: %d\n", status);
+
     socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 
     connect(socket_number, servinfo->ai_addr, servinfo->ai_addrlen);
@@ -128,9 +130,9 @@ void studentConnection(char *IPServer) {
 			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(1, NULL, NULL);
 			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+	    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+	    parse_server_message(received_message);
+	    close(socket_number);
 
 		} else if(command == '2') {
 
@@ -139,9 +141,9 @@ void studentConnection(char *IPServer) {
 			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(2, discipline, NULL);
 			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+	    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+	    parse_server_message(received_message);
+	    close(socket_number);
 
 
 		} else if(command == '3') {
@@ -150,17 +152,17 @@ void studentConnection(char *IPServer) {
 			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(3, discipline, NULL);
 			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+	    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+	    parse_server_message(received_message);
+	    close(socket_number);
 
 		} else if(command == '4') {
 			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(4, NULL, NULL);
 			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+	    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+	    parse_server_message(received_message);
+	    close(socket_number);
 
 		} else if(command == '5') {
 
@@ -169,9 +171,9 @@ void studentConnection(char *IPServer) {
 			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(6, discipline, NULL);
 			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+	    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+	    parse_server_message(received_message);
+	    close(socket_number);
 		} else {
 			printf("Ops! Este não é um número válido!\n");
 		}
@@ -207,79 +209,94 @@ void professorConnection(char * IPServer) {
     		received_message[i] = '\0';
    		}
 
-		scanf(" %c", &command);	
+		scanf(" %c", &command);
 
-		if(command == '1') {
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(1, NULL, NULL);
-			send(socket_number, message, strlen(message), 0);
+		printf("Escreva o nome da disciplina:\n");
+		scanf(" %s", discipline);
+
+		printf("Escreva o comentário:\n");
+		scanf(" %[^\n]", comment);
+
+		double tempos[60];
+		for(h = 0; h < 60; h++) {
+			timespec_get(&ts1, TIME_UTC);
+
+			if(command == '1') {
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(1, NULL, NULL);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
+		    //parse_server_message(received_message);
 		    close(socket_number);
 
-		} else if(command == '2') {
+			} else if(command == '2') {
 
-			printf("Escreva o nome da disciplina:\n");
-			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(2, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
+				//printf("Escreva o nome da disciplina:\n");
+				//scanf(" %s", discipline);
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(2, discipline, NULL);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
+		    //parse_server_message(received_message);
 		    close(socket_number);
 
 
-		} else if(command == '3') {
-			printf("Escreva o nome da disciplina:\n");
-			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(3, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
+			} else if(command == '3') {
+				//printf("Escreva o nome da disciplina:\n");
+				//scanf(" %s", discipline);
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(3, discipline, NULL);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
+		    //parse_server_message(received_message);
 		    close(socket_number);
 
-		} else if(command == '4') {
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(4, NULL, NULL);
-			send(socket_number, message, strlen(message), 0);
+			} else if(command == '4') {
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(4, NULL, NULL);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
+		    //parse_server_message(received_message);
 		    close(socket_number);
 
-		} else if(command == '5') {
+			} else if(command == '5') {
 
-			printf("Escreva o nome da disciplina:\n");
-			for(i = 0; i < RECEIVED_MESSAGE_LENGHT; i++) {
-    			comment[i] = '\0';
- 			}
-			scanf(" %s", discipline);
-			printf("Escreva o comentário:\n");
-			scanf(" %[^\n]", comment);
-			printf("comentario: %s\n", comment);
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(5, discipline, comment);
-			send(socket_number, message, strlen(message), 0);
+				//printf("Escreva o nome da disciplina:\n");
+				//for(int i = 0; i < RECEIVED_MESSAGE_LENGHT; i++) {
+	    		//	comment[i] = '\0';
+	 			//}
+				//scanf(" %s", discipline);
+				//printf("Escreva o comentário:\n");
+				//scanf(" %[^\n]", comment);
+				//printf("comentario: %s\n", comment);
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(5, discipline, comment);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    printf("Mensagem escrita com sucesso!\n");
+		    //parse_server_message(received_message);
 		    close(socket_number);
 
-		} else if(command == '6') {
+			} else if(command == '6') {
 
-			printf("Escreva o nome da disciplina:\n");
-			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(6, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
+				//printf("Escreva o nome da disciplina:\n");
+				//scanf(" %s", discipline);
+				socket_number = connectToTheServer(IPServer);
+				message = make_client_message(6, discipline, NULL);
+				send(socket_number, message, strlen(message), 0);
 		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
+		    //parse_server_message(received_message);
 		    close(socket_number);
-		}else {
-			printf("Ops! Este não é um número válido!\n");
+			}else {
+				printf("Ops! Este não é um número válido!\n");
+			}
+
+
+			timespec_get(&ts2, TIME_UTC);
+			double wtf = ts2.tv_nsec - ts1.tv_nsec;
+			printf("%lf\n", wtf);
 		}
 
-
-		
+		//printf("Tempo: %f\n", wtf);
 
 	}
 

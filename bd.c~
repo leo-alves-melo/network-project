@@ -222,7 +222,7 @@ int parse_server_message(char* message) {
 			}
 			break;
 		case 5:
-			printf("O seu comentário foi escrito com sucesso!");
+			printf("O seu comentário foi escrito com sucesso!", cJSON_GetObjectItemCaseSensitive(json, "content") -> valuestring);
 			break;
 		case 6:
 			obj = cont -> child -> child;
