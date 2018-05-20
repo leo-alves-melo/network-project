@@ -16,43 +16,6 @@
 #define MESSAGE_LENGHT 1024*10
 
 
-typedef struct Client {
-	int socket_number;
-	cJSON* db;
-	pthread_mutex_t *lock;
-
-} Client;
-
-void respondClient(void * address) {
-	char mess[MESSAGE_LENGHT];
-	char *retorno;
-	cJSON* db;
-
-	Client *client = (Client *) address;
-	db = client->db;
-
-
-    for(int i = 0; i < MESSAGE_LENGHT; i++) {
-    	mess[i] = '\0';
-    }
-
-    recv(client->socket_number, mess, MESSAGE_LENGHT, 0);
-
-    printf("Messagem que recebi: \n%s\n", mess);
-
-    /* Deve-se tomar cuidado com o parse, ele acessa recursos do banco de dados */
-
-    pthread_mutex_lock(client->lock);
-    parse_client_message(mess, &retorno, db);
-    pthread_mutex_unlock(client->lock);
-
-    send(client->socket_number, retorno, strlen(retorno), 0);
-
-		printf("Mensagem que respondi: \n%s\n", retorno);
-
-    close(client->socket_number);
-}
-
 int main() {
 
 	char command;
@@ -66,9 +29,13 @@ int main() {
 	struct sockaddr_storage their_addr;
 	socklen_t addr_size;
 	FILE *file;
-	Client * client;
 	pthread_t * thread;
 	pthread_mutex_t lock;
+	struct timespec ts1, ts2;
+	char message_buffer[MESSAGE_LENGHT];
+	int addr_len;
+	int i;
+	char *retorno;
 
 	cJSON* db;
 
@@ -77,9 +44,9 @@ int main() {
 	initialize(FILENAME, &file, &db);
 
 	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+	hints.ai_family = AF_UNSPEC; 
+	hints.ai_socktype = SOCK_DGRAM;
+	hints.ai_flags = AI_PASSIVE;     
 
 	status = getaddrinfo(NULL, "3490", &hints, &servinfo);
 
@@ -102,25 +69,39 @@ int main() {
 	}
 	printf("Olha meu bind: %d\n", meu_bind);
 
-	listen(socket_number, CLIENTS);
+	
 
-	pthread_mutex_init(&lock, NULL);
+	//pthread_mutex_init(&lock, NULL);
 
 	while(1) {
 
+		for(i = 0; i < MESSAGE_LENGHT; i++) {
+			message_buffer[i] = '\0';
+		}
 
-		addr_size = sizeof their_addr;
+		addr_len = sizeof their_addr;
+		recvfrom(socket_number, message_buffer, MESSAGE_LENGHT-1 , 0, (struct sockaddr *)&their_addr, &addr_size);
+		printf("Olha a mensagem: \n %s\n", message_buffer);
 
-	    new_fd = accept(socket_number, (struct sockaddr *)&their_addr, &addr_size);
+		parse_client_message(message_buffer, &retorno, db);
+		printf("Vou enviar isso: %s\n", retorno);
+		sendto(socket_number, retorno, strlen(retorno), 0, (struct sockaddr *)&their_addr, addr_len);
+		//clock_gettime(CLOCK_REALTIME, &ts1);
 
-	    client = (Client *) malloc(sizeof(Client *));
+		/*
+	    client = (Client *) malloc(sizeof(Client));
+
 
 	    client->socket_number = new_fd;
 	    client->db = db;
 	    client->lock = &lock;
+		client->time = &ts1;
 
-	    thread = (pthread_t *) malloc(sizeof(pthread_t *));
+
+	    thread = (pthread_t *) malloc(sizeof(pthread_t));
+
 	    pthread_create(thread, NULL, (void *) respondClient, (void *) client);
+	    */
 
 
 	}
