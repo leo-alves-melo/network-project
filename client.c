@@ -274,13 +274,23 @@ void professorConnection(char * IPServer) {
 		    parse_server_message(received_message);
 
 		} else if(command == '4') {
+
+			for(int h = 0; h < 60; h++) {
 			
-			message = make_client_message(4, NULL, NULL);
-			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
-			addr_len = sizeof servinfo;
-			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
-	
-		    parse_server_message(received_message);
+				message = make_client_message(4, NULL, NULL);
+
+				clock_gettime(CLOCK_REALTIME, &ts1);
+				sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+				addr_len = sizeof servinfo;
+				recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+				clock_gettime(CLOCK_REALTIME, &ts2);
+			    //parse_server_message(received_message);
+
+			     //parse_server_message(received_message);
+
+			    double wtf = ts2.tv_nsec - ts1.tv_nsec;
+				printf("%lf\n", wtf);
+			}
 
 		} else if(command == '5') {
 
@@ -292,14 +302,24 @@ void professorConnection(char * IPServer) {
 			printf("Escreva o comentário:\n");
 			scanf(" %[^\n]", comment);
 			printf("comentario: %s\n", comment);
-			
+
 			message = make_client_message(5, discipline, comment);
-			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
-			addr_len = sizeof servinfo;
-			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
-	
-		    parse_server_message(received_message);
-		    printf("Mensagem escrita com sucesso!\n");
+
+			for(int h = 0; h < 60; h++) {
+			
+				
+
+				clock_gettime(CLOCK_REALTIME, &ts1);
+				sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+				addr_len = sizeof servinfo;
+				recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+				clock_gettime(CLOCK_REALTIME, &ts2);
+			    parse_server_message(received_message);
+			    //printf("Mensagem escrita com sucesso!\n");
+
+			    double wtf = ts2.tv_nsec - ts1.tv_nsec;
+				printf("%lf\n", wtf);
+			}
 		    
 
 		} else if(command == '6') {
