@@ -74,29 +74,6 @@ char checkClientType() {
 	return clientType;
 }
 
-int sendToTheServer(char *IPServer, char *message) {
-
-	struct addrinfo hints;
-	struct addrinfo *servinfo;
-	int status;
-	char ipstr[INET6_ADDRSTRLEN];
-	int socket_number;
-
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;  
-	hints.ai_socktype = SOCK_DGRAM;
-	//hints.ai_flags = AI_PASSIVE;     
-
-	status = getaddrinfo(IPServer, "3490", &hints, &servinfo);
-
-    socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-
-    //connect(socket_number, servinfo->ai_addr, servinfo->ai_addrlen);
-
-    sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
-
-    return socket_number;
-}
 
 int connectToTheServer(char *IPServer) {
 
@@ -119,7 +96,6 @@ void studentConnection(char *IPServer) {
 	struct addrinfo hints;
 	struct addrinfo *servinfo;
 	int status;
-	char ipstr[INET6_ADDRSTRLEN];
 	int socket_number;
 	int addr_len;
 
@@ -152,57 +128,56 @@ void studentConnection(char *IPServer) {
 		if(command == '1') {
 			
 			message = make_client_message(1, NULL, NULL);
-			socket_number = sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
 			addr_len = sizeof servinfo;
-			printf("vamos\n");
-			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr *)&servinfo, &addr_len);
-			printf("fomos:\n");
-			printf("bnana:\n%s\n", received_message);
-		    //recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    printf("nada\n");
-		    close(socket_number);
 
 		} else if(command == '2') {
 
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
 			message = make_client_message(2, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 
 		} else if(command == '3') {
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(3, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 		} else if(command == '4') {
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(4, NULL, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 		} else if(command == '5') {
 
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(6, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
+
 		} else {
 			printf("Ops! Este não é um número válido!\n");
 		}
@@ -218,8 +193,22 @@ void professorConnection(char * IPServer) {
 	char discipline[10];
 	char comment[RECEIVED_MESSAGE_LENGHT];
 
+
+	int i;
+
+	struct addrinfo hints;
+	struct addrinfo *servinfo;
+	int status;
 	int socket_number;
-	int i, h;
+	int addr_len;
+
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;  
+	hints.ai_socktype = SOCK_DGRAM;   
+
+	status = getaddrinfo(IPServer, "3490", &hints, &servinfo);
+
+    socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 
 	struct timespec ts1, ts2;
 
@@ -241,42 +230,57 @@ void professorConnection(char * IPServer) {
 		scanf(" %c", &command);	
 
 		if(command == '1') {
-			socket_number = connectToTheServer(IPServer);
-			message = make_client_message(1, NULL, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
-		    parse_server_message(received_message);
-		    close(socket_number);
+
+			for(int h = 0; h < 60; h++) {
+				message = make_client_message(1, NULL, NULL);
+				clock_gettime(CLOCK_REALTIME, &ts1);
+				sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+				//timespec_get(&ts1, TIME_UTC);
+				
+				addr_len = sizeof servinfo;
+				recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+				clock_gettime(CLOCK_REALTIME, &ts2);
+
+			    //parse_server_message(received_message);
+
+			    double wtf = ts2.tv_nsec - ts1.tv_nsec;
+				printf("%lf\n", wtf);
+			}
+			
+			
 
 		} else if(command == '2') {
 
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(2, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 
 		} else if(command == '3') {
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(3, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 		} else if(command == '4') {
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(4, NULL, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 
 		} else if(command == '5') {
 
@@ -288,23 +292,27 @@ void professorConnection(char * IPServer) {
 			printf("Escreva o comentário:\n");
 			scanf(" %[^\n]", comment);
 			printf("comentario: %s\n", comment);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(5, discipline, comment);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
+		    parse_server_message(received_message);
 		    printf("Mensagem escrita com sucesso!\n");
-		    close(socket_number);
+		    
 
 		} else if(command == '6') {
 
 			printf("Escreva o nome da disciplina:\n");
 			scanf(" %s", discipline);
-			socket_number = connectToTheServer(IPServer);
+			
 			message = make_client_message(6, discipline, NULL);
-			send(socket_number, message, strlen(message), 0);
-		    recv(socket_number, received_message, RECEIVED_MESSAGE_LENGHT, 0);
+			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			addr_len = sizeof servinfo;
+			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+	
 		    parse_server_message(received_message);
-		    close(socket_number);
 		}else {
 			printf("Ops! Este não é um número válido!\n");
 		}
