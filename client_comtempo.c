@@ -75,6 +75,12 @@ char checkClientType() {
 }
 
 
+int connectToTheServer(char *IPServer) {
+
+	
+
+    return 0;
+}
 
 void studentConnection(char *IPServer) {
 
@@ -200,7 +206,7 @@ void professorConnection(char * IPServer) {
 	hints.ai_family = AF_UNSPEC;  
 	hints.ai_socktype = SOCK_DGRAM;   
 
-	status = getaddrinfo(IPServer, "3490", &hints, &servinfo); //A porta utilizada foi a 3490
+	status = getaddrinfo(IPServer, "3490", &hints, &servinfo);
 
     socket_number = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 
@@ -225,17 +231,21 @@ void professorConnection(char * IPServer) {
 
 		if(command == '1') {
 
-			message = make_client_message(1, NULL, NULL);
-			clock_gettime(CLOCK_REALTIME, &ts1);
-			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+			for(int h = 0; h < 60; h++) {
+				message = make_client_message(1, NULL, NULL);
+				clock_gettime(CLOCK_REALTIME, &ts1);
+				sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
+				//timespec_get(&ts1, TIME_UTC);
+				
+				addr_len = sizeof servinfo;
+				recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+				clock_gettime(CLOCK_REALTIME, &ts2);
 
-			
-			addr_len = sizeof servinfo;
-			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+			    //parse_server_message(received_message);
 
-		    parse_server_message(received_message);
-
-		
+			    double wtf = ts2.tv_nsec - ts1.tv_nsec;
+				printf("%lf\n", wtf);
+			}
 			
 			
 
@@ -264,14 +274,18 @@ void professorConnection(char * IPServer) {
 		    parse_server_message(received_message);
 
 		} else if(command == '4') {
+
+
 			
 			message = make_client_message(4, NULL, NULL);
 
+			clock_gettime(CLOCK_REALTIME, &ts1);
 			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
 			addr_len = sizeof servinfo;
 			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
-
+			clock_gettime(CLOCK_REALTIME, &ts2);
 		    parse_server_message(received_message);
+
 			
 
 		} else if(command == '5') {
@@ -287,13 +301,16 @@ void professorConnection(char * IPServer) {
 
 			message = make_client_message(5, discipline, comment);
 
+
+			
+			
 			sendto(socket_number, message, strlen(message), 0, servinfo->ai_addr, servinfo->ai_addrlen);
 			addr_len = sizeof servinfo;
 			recvfrom(socket_number, received_message, RECEIVED_MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) servinfo->ai_addr, &(servinfo->ai_addrlen));
+
 		    parse_server_message(received_message);
 		    printf("Mensagem escrita com sucesso!\n");
 
-			
 		    
 
 		} else if(command == '6') {
@@ -310,7 +327,9 @@ void professorConnection(char * IPServer) {
 		}else {
 			printf("Ops! Este não é um número válido!\n");
 		}
-	
+
+
+		
 
 	}
 

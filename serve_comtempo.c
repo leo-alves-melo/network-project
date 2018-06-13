@@ -95,14 +95,35 @@ int main() {
 		addr_len = sizeof their_addr;
 		
 		recvfrom(socket_number, message_buffer, MESSAGE_LENGHT-1 , 0, (struct sockaddr_in *) &their_addr, &addr_len);
-		printf("Olha a mensagem que recebi: \n %s\n", message_buffer);
+		clock_gettime(CLOCK_REALTIME, &ts1);
+		//printf("Olha a mensagem que recebi: \n %s\n", message_buffer);
 
 		parse_client_message(message_buffer, &retorno, db);
-		printf("Vou enviar isso: %s\n", retorno);
+		//printf("Vou enviar isso: %s\n", retorno);
 
 		
 		addr_len = sizeof their_addr;
 		sendto(socket_number, retorno, strlen(retorno), 0, (struct sockaddr_in *) &their_addr, addr_len);
+		clock_gettime(CLOCK_REALTIME, &ts2);
+		double wtf = ts2.tv_nsec - ts1.tv_nsec;
+		printf("%lf\n", wtf);
+
+		//clock_gettime(CLOCK_REALTIME, &ts1);
+
+		/*
+	    client = (Client *) malloc(sizeof(Client));
+
+
+	    client->socket_number = new_fd;
+	    client->db = db;
+	    client->lock = &lock;
+		client->time = &ts1;
+
+
+	    thread = (pthread_t *) malloc(sizeof(pthread_t));
+
+	    pthread_create(thread, NULL, (void *) respondClient, (void *) client);
+	    */
 
 
 	}

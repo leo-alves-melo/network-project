@@ -1,0 +1,3 @@
+grant codeBase "file:Users/leonardoalvesdemelo/Documents/unicamp/9_semestre/mc833/network-project/" {
+    permission java.security.AllPermission;
+};
